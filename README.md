@@ -2,12 +2,12 @@
 
 This setup builds and flashes the ESP32-S3 Linux image using Docker and injects a permanent Wi-Fi configuration into the Buildroot overlay before flashing.
 
-The Wi-Fi credentials are stored in a separate `wifi.env` file.
+The Wi-Fi credentials are stored in a separate `config.env` file.
 
 Start from the example file:
 
 ```bash
-cp wifi.env.example wifi.env
+cp config.env.example config.env
 ```
 
 ## Variables
@@ -65,17 +65,17 @@ Common port:
 /dev/ttyACM0
 ```
 
-If your board appears somewhere else, set `ESP32_PORT` in `wifi.env`.
+If your board appears somewhere else, set `ESP32_PORT` in `config.env`.
 
 ## Run installer
 
 ```bash
-./install-esp32s3-linux.sh wifi.env
+./install-esp32s3-linux.sh config.env
 ```
 
 The script will:
 
-1. Load Wi-Fi and board settings from `wifi.env`
+1. Load Wi-Fi and board settings from `config.env`
 2. Clone `hpsaturn/esp32s3-linux`
 3. Build the Docker image
 4. Copy default settings
@@ -207,7 +207,7 @@ Check actual port:
 ls /dev/ttyACM* /dev/ttyUSB*
 ```
 
-Edit `wifi.env`:
+Edit `config.env`:
 
 ```bash
 ESP32_PORT=/dev/ttyUSB0
@@ -252,7 +252,7 @@ BOARD_CONFIG=box3.conf
 Then rerun:
 
 ```bash
-./install-esp32s3-linux.sh wifi.env
+./install-esp32s3-linux.sh config.env
 ```
 
 ### Wi-Fi does not connect
@@ -279,13 +279,13 @@ Check that:
 Edit:
 
 ```bash
-nano wifi.env
+nano config.env
 ```
 
 Rerun:
 
 ```bash
-./install-esp32s3-linux.sh wifi.env
+./install-esp32s3-linux.sh config.env
 ```
 
 The image is rebuilt and reflashed with the new Wi-Fi settings.

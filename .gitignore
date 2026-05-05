@@ -1,4 +1,4 @@
 *.env
 .env
-wifi.env
+config.env
 esp32s3-linux/

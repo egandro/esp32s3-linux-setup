@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ENV_FILE="${1:-wifi.env}"
+ENV_FILE="${1:-config.env}"
 REPO_URL="https://github.com/hpsaturn/esp32s3-linux.git"
 REPO_DIR="esp32s3-linux"
 DOCKER_IMAGE="esp32linuxbase"
