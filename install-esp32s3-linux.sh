@@ -232,11 +232,16 @@ EOF
   if [[ -f "$BOARD_CONFIG" ]]; then
     ensure_config_line "$BOARD_CONFIG" "BR2_ROOTFS_OVERLAY" '"buildroot_overlay"'
 
+    if [[ -n "${ESP32_HOSTNAME:-}" ]]; then
+      ensure_config_line "$BOARD_CONFIG" "BR2_TARGET_GENERIC_HOSTNAME" "\"${ESP32_HOSTNAME}\""
+    fi
+
     if [[ "$ENABLE_DROPBEAR" == "1" ]]; then
       ensure_config_line "$BOARD_CONFIG" "BR2_PACKAGE_DROPBEAR" "y"
     fi
 
     inherit_package_overrides
+
   else
     echo "WARNING: board config not found: $BOARD_CONFIG"
     echo "Available configs:"
