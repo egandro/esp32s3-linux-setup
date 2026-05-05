@@ -27,6 +27,14 @@ ensure_config_line() {
   fi
 }
 
+inherit_package_overrides() {
+  local package_var
+
+  for package_var in $(compgen -A variable BR2_PACKAGE_); do
+    ensure_config_line "$BOARD_CONFIG" "$package_var" "${!package_var}"
+  done
+}
+
 load_env() {
   [[ -f "$ENV_FILE" ]] || die "Env file not found: $ENV_FILE"
 
@@ -216,6 +224,8 @@ EOF
     if [[ "$ENABLE_DROPBEAR" == "1" ]]; then
       ensure_config_line "$BOARD_CONFIG" "BR2_PACKAGE_DROPBEAR" "y"
     fi
+
+    inherit_package_overrides
   else
     echo "WARNING: board config not found: $BOARD_CONFIG"
     echo "Available configs:"

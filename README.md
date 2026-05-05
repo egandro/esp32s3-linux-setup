@@ -2,9 +2,7 @@
 
 This setup builds and flashes the ESP32-S3 Linux image using Docker and injects a permanent Wi-Fi configuration into the Buildroot overlay before flashing.
 
-The Wi-Fi credentials are stored in a separate `config.env` file.
-
-Start from the example file:
+`config.env.example` is the template. Copy it to `config.env` and edit `config.env`.
 
 ```bash
 cp config.env.example config.env
@@ -26,6 +24,12 @@ cp config.env.example config.env
 If Dropbear is enabled, set `SSH_PUBLIC_KEY_FILE` to a key like `~/.ssh/id_ed25519.pub`.
 `ESP32_HOSTNAME` sets the local hostname.
 Dropbear starts in key-only mode, so password login is disabled.
+
+## Additional Packages
+
+Buildroot package names live under `package/*/Config.in` in the Buildroot tree: https://github.com/buildroot/buildroot/tree/master/package.
+
+Set `BR2_PACKAGE_FOO=y` in `config.env` to enable a package. Use `make menuconfig` to confirm the exact `BR2_PACKAGE_*` names.
 
 ## Requirements
 
