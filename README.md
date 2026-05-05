@@ -10,17 +10,6 @@ Start from the example file:
 cp wifi.env.example wifi.env
 ```
 
-## Files
-
-Create these files in one empty working directory:
-
-```text
-wifi.env
-wifi.env.example
-install-esp32s3-linux.sh
-README.md
-```
-
 ## Variables
 
 | Variable | Meaning |
@@ -34,7 +23,7 @@ README.md
 | `ENABLE_DROPBEAR` | Set to `1` to enable Dropbear SSH |
 | `SSH_PUBLIC_KEY_FILE` | Public key file copied to `/root/.ssh/authorized_keys` when Dropbear is enabled |
 
-Use a key like `~/.ssh/id_ed25519.pub`.
+If Dropbear is enabled, set `SSH_PUBLIC_KEY_FILE` to a key like `~/.ssh/id_ed25519.pub`.
 `ESP32_HOSTNAME` sets the local hostname.
 Dropbear starts in key-only mode, so password login is disabled.
 
@@ -84,8 +73,6 @@ If your board appears somewhere else, set `ESP32_PORT` in `wifi.env`.
 ./install-esp32s3-linux.sh wifi.env
 ```
 
-The build takes roughly 20 GB of disk space. Flashing happens after the build finishes, and the script prompts you to press Enter before it starts.
-
 The script will:
 
 1. Load Wi-Fi and board settings from `wifi.env`
@@ -96,7 +83,7 @@ The script will:
 6. Add `/etc/wpa_supplicant.conf`
 7. Add `/etc/init.d/S41wifi`
 8. Enable `BR2_ROOTFS_OVERLAY="buildroot_overlay"` in the board config
-9. Set the root password and optionally enable Dropbear SSH
+9. Write the hostname and optionally enable Dropbear SSH
 10. Build and flash the ESP32-S3 Linux image
 
 ## Open serial console
