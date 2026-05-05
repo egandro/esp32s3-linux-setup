@@ -48,6 +48,7 @@ load_env() {
   : "${WIFI_PASSWORD:?Missing WIFI_PASSWORD in $ENV_FILE}"
   : "${WIFI_COUNTRY:=DE}"
   : "${BOARD_CONFIG:=devkit-c1-8m.conf}"
+  : "${WIFI_PSK_MODE:=plain}"
   : "${ENABLE_DROPBEAR:=1}"
   if [[ "$ENABLE_DROPBEAR" == "1" ]]; then
     : "${SSH_PUBLIC_KEY_FILE:?Missing SSH_PUBLIC_KEY_FILE in $ENV_FILE}"
@@ -104,16 +105,9 @@ prepare_overlay() {
   mkdir -p buildroot_overlay/var/run/wpa_supplicant
   mkdir -p buildroot_overlay/root
 
-  if command -v wpa_passphrase >/dev/null 2>&1; then
-    {
-      echo "ctrl_interface=/var/run/wpa_supplicant"
-      echo "update_config=1"
-      echo "country=${WIFI_COUNTRY}"
-      echo
-      wpa_passphrase "$WIFI_SSID" "$WIFI_PASSWORD" | sed '/^[[:space:]]*#psk=/d'
-    } > buildroot_overlay/etc/wpa_supplicant.conf
-  else
-    cat > buildroot_overlay/etc/wpa_supplicant.conf <<EOF
+  case "$WIFI_PSK_MODE" in
+    plain)
+      cat > buildroot_overlay/etc/wpa_supplicant.conf <<EOF
 ctrl_interface=/var/run/wpa_supplicant
 update_config=1
 country=${WIFI_COUNTRY}
@@ -123,7 +117,24 @@ network={
     psk="${WIFI_PASSWORD}"
 }
 EOF
-  fi
+      ;;
+
+    hashed)
+      command -v wpa_passphrase >/dev/null 2>&1 || die "WIFI_PSK_MODE=hashed needs wpa_passphrase (install wpasupplicant)"
+
+      {
+        echo "ctrl_interface=/var/run/wpa_supplicant"
+        echo "update_config=1"
+        echo "country=${WIFI_COUNTRY}"
+        echo
+        wpa_passphrase "$WIFI_SSID" "$WIFI_PASSWORD" | sed '/^[[:space:]]*#psk=/d'
+      } > buildroot_overlay/etc/wpa_supplicant.conf
+      ;;
+
+    *)
+      die "Invalid WIFI_PSK_MODE: $WIFI_PSK_MODE (use plain or hashed)"
+      ;;
+  esac
 
   chmod 600 buildroot_overlay/etc/wpa_supplicant.conf
 
