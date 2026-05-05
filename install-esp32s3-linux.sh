@@ -177,7 +177,7 @@ case "$1" in
   start)
     echo "Starting Dropbear SSH"
     mkdir -p /var/run
-    dropbear -R -E
+    dropbear -s -R -E
     ;;
 
   stop)

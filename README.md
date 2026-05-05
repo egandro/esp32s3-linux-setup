@@ -34,6 +34,7 @@ README.md
 | `SSH_PUBLIC_KEY_FILE` | Public key file copied to `/root/.ssh/authorized_keys` when Dropbear is enabled |
 
 Use a key like `~/.ssh/id_ed25519.pub`.
+Dropbear starts in key-only mode, so password login is disabled.
 
 ## Requirements
 
