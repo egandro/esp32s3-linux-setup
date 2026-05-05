@@ -1,0 +1,4 @@
+*.env
+.env
+wifi.env
+esp32s3-linux/
