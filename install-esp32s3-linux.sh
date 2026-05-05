@@ -119,6 +119,12 @@ EOF
 
   chmod 600 buildroot_overlay/etc/wpa_supplicant.conf
 
+  if [[ -n "${ESP32_HOSTNAME:-}" ]]; then
+    printf '%s\n' "$ESP32_HOSTNAME" > buildroot_overlay/etc/hostname
+  else
+    rm -f buildroot_overlay/etc/hostname
+  fi
+
   cat > buildroot_overlay/etc/init.d/S41wifi <<'EOF'
 #!/bin/sh
 

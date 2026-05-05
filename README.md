@@ -30,10 +30,12 @@ README.md
 | `WIFI_PASSWORD` | Wi-Fi password |
 | `WIFI_COUNTRY` | Regulatory country code, for example `DE`, `US`, `GB` |
 | `BOARD_CONFIG` | ESP32-S3 Linux board config file |
+| `ESP32_HOSTNAME` | Optional hostname written to `/etc/hostname` |
 | `ENABLE_DROPBEAR` | Set to `1` to enable Dropbear SSH |
 | `SSH_PUBLIC_KEY_FILE` | Public key file copied to `/root/.ssh/authorized_keys` when Dropbear is enabled |
 
 Use a key like `~/.ssh/id_ed25519.pub`.
+`ESP32_HOSTNAME` sets the local hostname.
 Dropbear starts in key-only mode, so password login is disabled.
 
 ## Requirements
