@@ -167,6 +167,7 @@ EOF
     [[ -f "$SSH_PUBLIC_KEY_FILE" ]] || die "SSH public key not found: $SSH_PUBLIC_KEY_FILE"
 
     mkdir -p buildroot_overlay/root/.ssh
+    chmod 700 buildroot_overlay/root/.ssh
     cp "$SSH_PUBLIC_KEY_FILE" buildroot_overlay/root/.ssh/authorized_keys
     chmod 600 buildroot_overlay/root/.ssh/authorized_keys
 
