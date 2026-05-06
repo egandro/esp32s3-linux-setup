@@ -230,7 +230,7 @@ EOF
   fi
 
   if [[ -f "$BOARD_CONFIG" ]]; then
-    ensure_config_line "$BOARD_CONFIG" "BR2_ROOTFS_OVERLAY" '"buildroot_overlay"'
+    ensure_config_line "$BOARD_CONFIG" "BR2_ROOTFS_OVERLAY" '"/app/buildroot_overlay"'
 
     if [[ -n "${ESP32_HOSTNAME:-}" ]]; then
       ensure_config_line "$BOARD_CONFIG" "BR2_TARGET_GENERIC_HOSTNAME" "\"${ESP32_HOSTNAME}\""
