@@ -43,21 +43,6 @@ Host machine:
 - ESP32-S3 board with PSRAM
 - Roughly 20 GB of free disk space for the build
 
-Install required host tools on Debian/Ubuntu:
-
-```bash
-sudo apt update
-sudo apt install -y git docker.io
-sudo usermod -aG docker "$USER"
-newgrp docker
-```
-
-Check Docker:
-
-```bash
-docker info
-```
-
 Check board serial port:
 
 ```bash
@@ -75,7 +60,7 @@ If your board appears somewhere else, set `ESP32_PORT` in `config.env`.
 ## Run installer
 
 ```bash
-./install-esp32s3-linux.sh config.env
+make install
 ```
 
 The script will:
@@ -86,15 +71,14 @@ The script will:
 4. Copy default settings
 5. Create a Buildroot overlay
 6. Add `/etc/wpa_supplicant.conf`
-7. Add `/etc/init.d/S41wifi`
-8. Enable `BR2_ROOTFS_OVERLAY="buildroot_overlay"` in the board config
+7. Enable `BR2_ROOTFS_OVERLAY="board/espressif/esp32s3/rootfs_overlay /app/buildroot_overlay"` in the board config
 9. Write the hostname and optionally enable Dropbear SSH
 10. Build and flash the ESP32-S3 Linux image
 
 ## Open serial console
 
 ```bash
-picocom -b 115200 /dev/ttyACM0
+make connect
 ```
 
 Login:
@@ -130,148 +114,13 @@ Test DNS:
 ping -c 3 google.com
 ```
 
-Restart Wi-Fi manually:
-
-```sh
-/etc/init.d/S41wifi restart
-```
-
-Stop Wi-Fi:
-
-```sh
-/etc/init.d/S41wifi stop
-```
-
-Start Wi-Fi:
-
-```sh
-/etc/init.d/S41wifi start
-```
-
 ## What gets installed into the ESP32-S3 image
 
 The script injects these files into the Buildroot root filesystem overlay:
 
 ```text
 /etc/wpa_supplicant.conf
-/etc/init.d/S41wifi
-```
-
-`S41wifi` is run during init because Buildroot SysV init scripts in `/etc/init.d/` are executed in sorted order.
-
-## Common failures
-
-### Docker permission denied
-
-Error:
-
-```text
-Docker not usable by current user
-```
-
-Fix:
-
-```bash
-sudo usermod -aG docker "$USER"
-newgrp docker
-docker info
-```
-
-### Serial port not found
-
-Error:
-
-```text
-Serial device not found: /dev/ttyACM0
-```
-
-Check actual port:
-
-```bash
-ls /dev/ttyACM* /dev/ttyUSB*
-```
-
-Edit `config.env`:
-
-```bash
-ESP32_PORT=/dev/ttyUSB0
-```
-
-### Serial permission denied
-
-The installer passes the serial device group into Docker, so this should normally not be needed.
-If flashing still fails inside the Docker container, use this workaround:
-
-```bash
-docker exec -it -u root esp32s3linux bash
-chmod 666 /dev/ttyACM0
-```
-
-### Wrong board config
-
-Edit:
-
-```bash
-BOARD_CONFIG=devkit-c1-8m.conf
-```
-
-or:
-
-```bash
-BOARD_CONFIG=box3.conf
-```
-
-Then rerun:
-
-```bash
-./install-esp32s3-linux.sh config.env
-```
-
-### Wi-Fi does not connect
-
-On ESP32-S3 shell:
-
-```sh
-cat /etc/wpa_supplicant.conf
-ip link show espsta0
-/etc/init.d/S41wifi restart
-dmesg | tail -50
-```
-
-Check that:
-
-- SSID is exact
-- Password is correct
-- `WIFI_COUNTRY` is valid
-- Router supports 2.4 GHz Wi-Fi
-- Board is close to the router
-
-## Rebuild after changing Wi-Fi
-
-Edit:
-
-```bash
-nano config.env
-```
-
-Rerun:
-
-```bash
-./install-esp32s3-linux.sh config.env
-```
-
-The image is rebuilt and reflashed with the new Wi-Fi settings.
-
-## Cleanup
-
-Remove cloned repository:
-
-```bash
-rm -rf esp32s3-linux
-```
-
-Remove Docker image:
-
-```bash
-docker rmi esp32linuxbase
+/etc/hostname
+/root/.ssh/authorized_keys
+/etc/init.d/S50dropbear
 ```
