@@ -66,6 +66,10 @@ check_host() {
   fi
 }
 
+serial_device_group() {
+  stat -c '%g' "$ESP32_PORT"
+}
+
 reverse_patches() {
   local patch_file
   local patch_dir="$(pwd)/patches"
@@ -295,6 +299,7 @@ flash_board() {
   docker run --rm -it \
     --name esp32s3linux \
     --user="$(id -u):$(id -g)" \
+    --group-add "$(serial_device_group)" \
     -v ./esp32-linux-build:/app \
     --env-file settings.cfg \
     --device="$ESP32_PORT" \

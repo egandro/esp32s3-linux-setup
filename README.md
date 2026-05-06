@@ -199,24 +199,12 @@ ESP32_PORT=/dev/ttyUSB0
 
 ### Serial permission denied
 
-Temporary fix:
-
-```bash
-sudo chmod 666 /dev/ttyACM0
-```
-
-If the flashing step runs inside the Docker container, you can also fix permissions there:
+The installer passes the serial device group into Docker, so this should normally not be needed.
+If flashing still fails inside the Docker container, use this workaround:
 
 ```bash
 docker exec -it -u root esp32s3linux bash
 chmod 666 /dev/ttyACM0
-```
-
-Better fix:
-
-```bash
-sudo usermod -aG dialout "$USER"
-newgrp dialout
 ```
 
 ### Wrong board config
