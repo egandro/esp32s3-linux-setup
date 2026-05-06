@@ -1,0 +1,39 @@
+diff --git a/rebuild-esp32s3-linux-wifi.sh b/rebuild-esp32s3-linux-wifi.sh
+index 44013c2..79af855 100755
+--- a/rebuild-esp32s3-linux-wifi.sh
++++ b/rebuild-esp32s3-linux-wifi.sh
+@@ -23,6 +23,27 @@ function die()
+ 	exit 1
+ }
+ 
++function apply_br2_overrides()
++{
++	local config_file="build-buildroot-$BUILDROOT_CONFIG/.config"
++	local var
++	local value
++
++	[ -f "$config_file" ] || die "Buildroot config is missing: $config_file"
++
++	for var in $(compgen -A variable BR2_) ; do
++		value="${!var}"
++		case "$value" in
++			y|m|n)
++				buildroot/utils/config --file "$config_file" --set-val "$var" "$value"
++				;;
++			*)
++				buildroot/utils/config --file "$config_file" --set-str "$var" "$value"
++				;;
++		esac
++	done
++}
++
+ while : ; do
+ 	case "$1" in
+ 		-c)
+@@ -106,5 +127,6 @@ if [ ! -d build-buildroot-$BUILDROOT_CONFIG ] ; then
+ 	buildroot/utils/config --file build-buildroot-$BUILDROOT_CONFIG/.config --set-str TOOLCHAIN_EXTERNAL_PREFIX '$(ARCH)-esp32s3-linux-uclibcfdpic'
+ 	buildroot/utils/config --file build-buildroot-$BUILDROOT_CONFIG/.config --set-str TOOLCHAIN_EXTERNAL_CUSTOM_PREFIX '$(ARCH)-esp32s3-linux-uclibcfdpic'
+ fi
++apply_br2_overrides
+ nice make -C buildroot O=`pwd`/build-buildroot-$BUILDROOT_CONFIG
+ [ -f build-buildroot-$BUILDROOT_CONFIG/images/xipImage -a -f build-buildroot-$BUILDROOT_CONFIG/images/rootfs.cramfs -a -f build-buildroot-$BUILDROOT_CONFIG/images/etc.jffs2 ] || exit 1

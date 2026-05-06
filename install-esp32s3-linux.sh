@@ -66,10 +66,29 @@ check_host() {
   fi
 }
 
+reverse_patches() {
+  local patch_file
+  local patch_dir="$(pwd)/patches"
+  local target_dir="$REPO_DIR/esp32-linux-build"
+
+  [[ -d "$patch_dir" ]] || return
+  [[ -d "$target_dir" ]] || return
+
+  for patch_file in "$patch_dir"/*.patch; do
+    [[ -e "$patch_file" ]] || continue
+
+    if git -C "$target_dir" apply --reverse --check "$patch_file" >/dev/null 2>&1; then
+      git -C "$target_dir" apply --reverse "$patch_file"
+    fi
+  done
+}
+
 checkout_repo() {
   if [[ ! -d "$REPO_DIR" ]]; then
     git clone --recursive "$REPO_URL" "$REPO_DIR"
   else
+    reverse_patches
+
     cd "$REPO_DIR"
     git pull --ff-only
     git submodule update --init --recursive
@@ -86,6 +105,25 @@ build_docker_image() {
     -t "$DOCKER_IMAGE" .
 
   cd ..
+}
+
+apply_patches() {
+  local patch_file
+  local patch_dir="$(pwd)/patches"
+  local target_dir="$REPO_DIR/esp32-linux-build"
+
+  [[ -d "$patch_dir" ]] || return
+  [[ -d "$target_dir" ]] || die "Patch target not found: $target_dir"
+
+  for patch_file in "$patch_dir"/*.patch; do
+    [[ -e "$patch_file" ]] || continue
+
+    if git -C "$target_dir" apply --reverse --check "$patch_file" >/dev/null 2>&1; then
+      continue
+    fi
+
+    git -C "$target_dir" apply "$patch_file"
+  done
 }
 
 prepare_settings() {
@@ -230,7 +268,7 @@ EOF
   fi
 
   if [[ -f "$BOARD_CONFIG" ]]; then
-    ensure_config_line "$BOARD_CONFIG" "BR2_ROOTFS_OVERLAY" '"/app/buildroot_overlay"'
+    ensure_config_line "$BOARD_CONFIG" "BR2_ROOTFS_OVERLAY" '"board/espressif/esp32s3/rootfs_overlay /app/buildroot_overlay"'
 
     if [[ -n "${ESP32_HOSTNAME:-}" ]]; then
       ensure_config_line "$BOARD_CONFIG" "BR2_TARGET_GENERIC_HOSTNAME" "\"${ESP32_HOSTNAME}\""
@@ -270,6 +308,7 @@ main() {
   load_env
   check_host
   checkout_repo
+  apply_patches
   build_docker_image
   prepare_settings
   prepare_overlay
