@@ -150,7 +150,6 @@ prepare_overlay() {
   case "$WIFI_PSK_MODE" in
     plain)
       cat > buildroot_overlay/etc/wpa_supplicant.conf <<EOF
-ctrl_interface=/var/run/wpa_supplicant
 update_config=1
 country=${WIFI_COUNTRY}
 
@@ -165,7 +164,6 @@ EOF
       command -v wpa_passphrase >/dev/null 2>&1 || die "WIFI_PSK_MODE=hashed needs wpa_passphrase (install wpasupplicant)"
 
       {
-        echo "ctrl_interface=/var/run/wpa_supplicant"
         echo "update_config=1"
         echo "country=${WIFI_COUNTRY}"
         echo
