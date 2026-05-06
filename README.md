@@ -72,8 +72,8 @@ The script will:
 5. Create a Buildroot overlay
 6. Add `/etc/wpa_supplicant.conf`
 7. Enable `BR2_ROOTFS_OVERLAY="board/espressif/esp32s3/rootfs_overlay /app/buildroot_overlay"` in the board config
-9. Write the hostname and optionally enable Dropbear SSH
-10. Build and flash the ESP32-S3 Linux image
+8. Write the hostname and optionally enable Dropbear SSH
+9. Build and flash the ESP32-S3 Linux image
 
 ## Open serial console
 
@@ -92,35 +92,4 @@ Exit picocom:
 ```text
 Ctrl-a
 Ctrl-x
-```
-
-## Check Wi-Fi after boot
-
-On the ESP32-S3 Linux shell:
-
-```sh
-ip addr show espsta0
-```
-
-Test network:
-
-```sh
-ping -c 3 8.8.8.8
-```
-
-Test DNS:
-
-```sh
-ping -c 3 google.com
-```
-
-## What gets installed into the ESP32-S3 image
-
-The script injects these files into the Buildroot root filesystem overlay:
-
-```text
-/etc/wpa_supplicant.conf
-/etc/hostname
-/root/.ssh/authorized_keys
-/etc/init.d/S50dropbear
 ```
